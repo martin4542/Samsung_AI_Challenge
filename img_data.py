@@ -16,6 +16,7 @@ args = parser.parse_args()
 
 
 train = pd.read_csv(args.train_path)
+test = pd.read_csv(args.test_path)
 dev = pd.read_csv(args.dev_path)
 
 
@@ -26,3 +27,12 @@ for idx, row in tqdm(train.iterrows()):
     if m != None:
         img = Draw.MolToImage(m, size=(300,300))
         img.save(f'data/train_img/{file}.png')
+        
+
+for idx, row in tqdm(test.iterrows()):
+    file = row['uid']
+    smiles = row['SMILES']
+    m = Chem.MolFromSmiles(smiles)
+    if m != None:
+        img = Draw.MolToImage(m, size=(300,300))
+        img.save(f'data/test_img/{file}.png')
