@@ -5,7 +5,7 @@ from torchvision import models
 from torch.utils.data import Dataset, DataLoader
 
 class CNN_Encoder(nn.Module):
-    def __init__(self, embedding_dim, rate):
+    def __init__(self, embedding_dim):
         super(CNN_Encoder, self).__init__()
         model = models.resnet50(pretrained=True)
         modules = list(model.children())[:-2]
@@ -25,10 +25,10 @@ class CNN_Encoder(nn.Module):
         return x
 
 class RNN_Decoder(nn.Module):
-    def __init__(self, max_len, embedding_dim, num_layers, rate):
+    def __init__(self, max_len, embedding_dim, num_layers):
         super(RNN_Decoder, self).__init__()
         self.embedding = nn.Embedding(max_len, embedding_dim)
-        self.dropout = nn.Dropout(rate)
+        self.dropout = nn.Dropout(0.4)
         self.lstm = nn.LSTM(embedding_dim, embedding_dim, num_layers)
         self.final_layer = nn.Linear((max_len+100) * embedding_dim, 2)
     
@@ -42,10 +42,10 @@ class RNN_Decoder(nn.Module):
         return output
 
 class CNN2RNN(nn.Module):
-    def __init__(self, embedding_dim, max_len, num_layers, rate):
+    def __init__(self, embedding_dim, max_len, num_layers):
         super(CNN2RNN, self).__init__()
-        self.cnn = CNN_Encoder(embedding_dim, rate)
-        self.rnn = RNN_Decoder(embedding_dim, num_layers, rate)
+        self.cnn = CNN_Encoder(embedding_dim)
+        self.rnn = RNN_Decoder(embedding_dim, num_layers)
     
     def forward(self, img, seq):
         cnn_output = self.cnn(img)
