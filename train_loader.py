@@ -48,13 +48,13 @@ class CustomDataset(Dataset):
         return len(self.imgs)
 
     def __getitem__(self, index):
-        img = cv2.imread(self.imgs[index]).astpye(np.float32)/255
+        img = cv2.imread(self.imgs[index]).astype(np.float32)/255
         img = np.transpose(img, (2,0,1))
         if self.mode == 'train':
             return {
-                'img': torch.tensor(img, dtpye=torch.float32),
+                'img': torch.tensor(img, dtype=torch.float32),
                 'seq': torch.tensor(self.seqs[index], dtype=torch.long),
-                'label': torch.tensor(self.labels[index], dtpye=torch.float32)
+                'label': torch.tensor(self.labels[index], dtype=torch.float32)
             }
         else:
             return{
@@ -65,19 +65,16 @@ class CustomDataset(Dataset):
 def Get_DataLoader(args, type='Train'):
     if type == 'Train':
         data = pd.read_csv(args.train_path)
-        sub_data = pd.read_csv(args.dev_path)
-        train = pd.concat([data, sub_data])
     elif type == 'Test':
         data = pd.read_csv(args.test_path)
-        return False
     
-    max_len = train.SMILES.str.len().max()
+    max_len = data.SMILES.str.len().max()
     tokenizer = SMILES_Tokenizer(max_len)
-    tokenizer.fit(train.SMILES)
+    tokenizer.fit(data.SMILES)
 
-    seqs = tokenizer.txt2seq(train.SMILES)
-    imgs = ('./data/train_imgs/'+data.uid+'.png').to_numpy()
-    labels = train[['S1_energy(eV)', 'T1_energy(eV)']].to_numpy()
+    seqs = tokenizer.txt2seq(data.SMILES)
+    imgs = ('./data/train_img/'+data.uid+'.png').to_numpy()
+    labels = data[['S1_energy(eV)', 'T1_energy(eV)']].to_numpy()
 
     data_len = len(imgs)
     cut_off = int(data_len * 0.8)

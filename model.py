@@ -45,7 +45,7 @@ class CNN2RNN(nn.Module):
     def __init__(self, embedding_dim, max_len, num_layers):
         super(CNN2RNN, self).__init__()
         self.cnn = CNN_Encoder(embedding_dim)
-        self.rnn = RNN_Decoder(embedding_dim, num_layers)
+        self.rnn = RNN_Decoder(max_len, embedding_dim, num_layers)
     
     def forward(self, img, seq):
         cnn_output = self.cnn(img)
