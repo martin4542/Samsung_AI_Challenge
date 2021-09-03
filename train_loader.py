@@ -73,8 +73,11 @@ def Get_DataLoader(args, type='Train'):
     tokenizer.fit(data.SMILES)
 
     seqs = tokenizer.txt2seq(data.SMILES)
-    imgs = ('./data/train_img/'+data.uid+'.png').to_numpy()
-    labels = data[['S1_energy(eV)', 'T1_energy(eV)']].to_numpy()
+    if type == 'Train':
+        imgs = ('./data/train_img/'+data.uid+'.png').to_numpy()
+        labels = data[['S1_energy(eV)', 'T1_energy(eV)']].to_numpy()
+    else:
+        imgs = ('./data/test_img/'+data.uid+'.png').to_numpy()
 
     data_len = len(imgs)
     cut_off = int(data_len * 0.8)
@@ -89,6 +92,6 @@ def Get_DataLoader(args, type='Train'):
         return train_dataloader, val_dataloader
 
     else:
-        dset = CustomDataset(imgs, seqs, labels)
+        dset = CustomDataset(imgs, seqs, mode='test')
         dataloader = DataLoader(dset, batch_size=args.batch_size, shuffle=False)
         return dataloader

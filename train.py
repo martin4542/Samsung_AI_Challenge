@@ -14,7 +14,7 @@ parser.add_argument('--embedding', default=128, type=int, help='embedding dimens
 parser.add_argument('--max_len', default=265, type=int, help='max length of smiles')
 parser.add_argument('--num_layers', default=1, type=int, help='number of layers')
 parser.add_argument('--batch_size', default=32, type=int, help='batch size')
-parser.add_argument('--lr', default=0.01, type=float, help='learning rate')
+parser.add_argument('--lr', default=0.0001, type=float, help='learning rate')
 args = parser.parse_args()
 
 device = torch.device('cuda:0')
@@ -24,7 +24,7 @@ model.to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 loss_fn = nn.L1Loss()
-loss_fn.to(device)
+#loss_fn.to(device)
 
 train_loader, val_loader = Get_DataLoader(args)
 
@@ -41,8 +41,10 @@ for epoch in tqdm(range(args.epoch)):
         seq = batch['seq'].to(device)
         label = batch['label'].to(device)
 
+        model.train()
         optimizer.zero_grad()
-        predict = model.forward(img, seq)
+        #with torch.cuda.amp.autocast():
+        predict = model(img, seq)
         loss = loss_fn(predict, label)
         loss.backward()
         optimizer.step()
@@ -57,7 +59,7 @@ for epoch in tqdm(range(args.epoch)):
             seq = batch['seq'].to(device)
             label = batch['label'].to(device)
 
-            predict = model.forward(img, seq)
+            predict = model(img, seq)
             loss = loss_fn(label, predict)
 
             val_len += img.shape[0]
