@@ -13,8 +13,7 @@ class CNN_Encoder(nn.Module):
         self.classifier = nn.Sequential(
             nn.Dropout(0.4),
             nn.Linear(2048, embedding_dim),
-            nn.ReLU(),
-            nn.Dropout(0.4)
+            nn.ReLU()
         )
 
     def forward(self, x):
