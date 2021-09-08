@@ -66,18 +66,20 @@ def Get_DataLoader(args, type='Train'):
     if type == 'Train':
         data = pd.read_csv(args.train_path)
     elif type == 'Test':
-        data = pd.read_csv(args.test_path)
+        data = pd.read_csv(args.train_path)
+        test = pd.read_csv(args.test_path)
     
     max_len = data.SMILES.str.len().max()
     tokenizer = SMILES_Tokenizer(max_len)
     tokenizer.fit(data.SMILES)
 
-    seqs = tokenizer.txt2seq(data.SMILES)
     if type == 'Train':
         imgs = ('./data/train_img/'+data.uid+'.png').to_numpy()
         labels = data[['S1_energy(eV)', 'T1_energy(eV)']].to_numpy()
+        seqs = tokenizer.txt2seq(data.SMILES)
     else:
         imgs = ('./data/test_img/'+data.uid+'.png').to_numpy()
+        seqs = tokenizer.txt2seq(test.SMILES)
 
     data_len = len(imgs)
     cut_off = int(data_len * 0.8)

@@ -31,12 +31,10 @@ train_loader, val_loader = Get_DataLoader(args)
 best_loss = 100.
 
 for epoch in tqdm(range(args.epoch)):
-    total_len = 0
     avg_loss = 0
-    val_len = 0 
     val_loss = 0
 
-    for batch in train_loader:
+    for idx, batch in enumerate(train_loader):
         img = batch['img'].to(device)
         seq = batch['seq'].to(device)
         label = batch['label'].to(device)
@@ -49,12 +47,11 @@ for epoch in tqdm(range(args.epoch)):
         loss.backward()
         optimizer.step()
         
-        total_len += img.shape[0]
         avg_loss += loss.item()
-    avg_loss /= total_len
+    avg_loss /= (idx + 1)
     
     with torch.no_grad():
-        for batch in val_loader:
+        for idx, batch in enumerate(val_loader):
             img = batch['img'].to(device)
             seq = batch['seq'].to(device)
             label = batch['label'].to(device)
@@ -62,9 +59,8 @@ for epoch in tqdm(range(args.epoch)):
             predict = model(img, seq)
             loss = loss_fn(label, predict)
 
-            val_len += img.shape[0]
             val_loss += loss.item()
-    val_loss /= val_len
+    val_loss /= (idx + 1)
 
     if best_loss > val_loss:
         best_loss = val_loss
