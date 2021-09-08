@@ -78,7 +78,7 @@ def Get_DataLoader(args, type='Train'):
         labels = data[['S1_energy(eV)', 'T1_energy(eV)']].to_numpy()
         seqs = tokenizer.txt2seq(data.SMILES)
     else:
-        imgs = ('./data/test_img/'+data.uid+'.png').to_numpy()
+        imgs = ('./data/test_img/'+test.uid+'.png').to_numpy()
         seqs = tokenizer.txt2seq(test.SMILES)
 
     data_len = len(imgs)
